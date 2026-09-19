@@ -1,0 +1,2605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>FlowShield Kerala</title>
+
+<!-- Leaflet Map -->
+<link rel="stylesheet"
+href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<style>
+
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    font-family:Segoe UI,Arial,sans-serif;
+    background:#061421;
+    color:#eaf7ff;
+}
+
+.header{
+    height:72px;
+    padding:12px 28px;
+    background:#04101d;
+    border-bottom:1px solid #174b65;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+}
+
+.brand{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.logo{
+    font-size:32px;
+}
+
+.brand h1{
+    margin:0;
+    font-size:23px;
+    letter-spacing:2px;
+}
+
+.brand p{
+    margin:3px 0 0;
+    color:#8eafbf;
+    font-size:11px;
+}
+
+.live{
+    border:1px solid #159b78;
+    color:#57ffc8;
+    border-radius:20px;
+    padding:8px 13px;
+    font-size:11px;
+}
+
+.dot{
+    display:inline-block;
+    width:8px;
+    height:8px;
+    border-radius:50%;
+    background:#35efaa;
+    margin-right:6px;
+}
+
+.container{
+    width:94%;
+    max-width:1450px;
+    margin:22px auto;
+}
+
+.stats{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:14px;
+    margin-bottom:17px;
+}
+
+.card,
+.panel,
+.ai{
+    background:#091e31;
+    border:1px solid #17445d;
+    border-radius:15px;
+    box-shadow:0 10px 25px rgba(0,0,0,.25);
+}
+
+.stat{
+    padding:15px;
+}
+
+.label{
+    font-size:10px;
+    color:#8eafbf;
+}
+
+.value{
+    font-size:25px;
+    font-weight:700;
+    margin-top:5px;
+}
+
+.small{
+    font-size:10px;
+    color:#63cbf8;
+    margin-top:3px;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:1.1fr .9fr;
+    gap:17px;
+}
+
+.title{
+    padding:14px 17px;
+    border-bottom:1px solid #17384a;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.title h2{
+    margin:0;
+    font-size:15px;
+}
+
+.title span{
+    font-size:10px;
+    color:#66cfff;
+}
+
+.controls{
+    padding:17px;
+}
+
+.control-row{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:20px;
+}
+
+label{
+    display:flex;
+    justify-content:space-between;
+    font-size:11px;
+    color:#bdd5df;
+    margin-bottom:7px;
+}
+
+input[type=range]{
+    width:100%;
+    accent-color:#00bfff;
+}
+
+.buttons{
+    display:flex;
+    gap:8px;
+    margin-top:16px;
+}
+
+button{
+    border:0;
+    border-radius:8px;
+    padding:9px 14px;
+    color:white;
+    font-weight:700;
+    cursor:pointer;
+}
+
+.start{
+    background:#087cff;
+}
+
+.pause{
+    background:#c98100;
+}
+
+.reset{
+    background:#43586b;
+}
+
+.map-wrap{
+    padding:15px;
+}
+
+.map{
+    height:500px;
+    border-radius:13px;
+    overflow:hidden;
+    border:1px solid #23495e;
+}
+
+#map{
+    height:100%;
+    width:100%;
+}
+
+.warning{
+    margin:15px;
+    padding:15px;
+    border-radius:13px;
+    background:#5e1828;
+    border:1px solid #9f3045;
+}
+
+.warning.stable{
+    background:#07503f;
+    border-color:#238d73;
+}
+
+.warning-title{
+    font-size:16px;
+    font-weight:700;
+    margin-bottom:7px;
+}
+
+.warning-text{
+    font-size:11px;
+    line-height:1.6;
+    color:#d4e4e9;
+}
+
+.priority{
+    display:grid;
+    gap:6px;
+    margin-top:10px;
+}
+
+.priority div{
+    display:flex;
+    justify-content:space-between;
+    background:#0003;
+    padding:7px;
+    border-radius:6px;
+    font-size:10px;
+}
+
+.ai{
+    margin-top:17px;
+    padding:16px;
+    background:linear-gradient(135deg,#2a1856,#091f43);
+    border-color:#533d82;
+}
+
+.aihead{
+    display:flex;
+    justify-content:space-between;
+}
+
+.badge{
+    font-size:9px;
+    border:1px solid #7958b9;
+    color:#d5c0ff;
+    padding:4px 8px;
+    border-radius:12px;
+}
+
+.riskbar{
+    height:9px;
+    background:#ffffff12;
+    border-radius:9px;
+    margin-top:8px;
+    overflow:hidden;
+}
+
+.fill{
+    height:100%;
+    width:0;
+    background:linear-gradient(90deg,#20d69b,#ffb72e,#ff435c);
+    transition:.4s;
+}
+
+.aigrid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:7px;
+    margin-top:12px;
+}
+
+.aimini{
+    background:#0003;
+    padding:8px;
+    border-radius:7px;
+}
+
+.aimini small{
+    display:block;
+    color:#aebfd4;
+    font-size:8px;
+}
+
+.aimini strong{
+    font-size:13px;
+}
+
+.chartbox{
+    height:390px;
+    padding:12px 15px 16px;
+}
+
+.chartbox canvas{
+    width:100%;
+    height:100%;
+    display:block;
+    background:#061725;
+    border-radius:10px;
+}
+
+.chart-note{
+    padding:10px 17px;
+    border-top:1px solid #17384a;
+    color:#8fb9ca;
+    font-size:10px;
+}
+
+.alerts{
+    max-height:360px;
+    overflow-y:auto;
+    padding:12px;
+}
+
+.alert{
+    border-radius:10px;
+    padding:11px;
+    margin-bottom:9px;
+    background:#102b3e;
+    border-left:4px solid #20d69b;
+}
+
+.warning-alert{
+    border-left-color:#ffae22;
+}
+
+.critical-alert{
+    border-left-color:#ff354f;
+    background:#351722;
+}
+
+.alert-head{
+    display:flex;
+    justify-content:space-between;
+    font-size:11px;
+    font-weight:700;
+}
+
+.alert-body{
+    margin-top:6px;
+    font-size:10px;
+    color:#c3d9e3;
+    line-height:1.5;
+}
+
+.alert-status{
+    display:inline-block;
+    margin-top:7px;
+    padding:4px 7px;
+    border-radius:5px;
+    background:#0b513f;
+    color:#62ffc9;
+    font-size:9px;
+}
+
+.alert-critical-status{
+    background:#681c2c;
+    color:#ff9aa9;
+}
+
+.alert-summary{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:7px;
+    padding:12px;
+}
+
+.alert-stat{
+    background:#061725;
+    padding:10px;
+    border-radius:8px;
+}
+
+.alert-stat small{
+    display:block;
+    font-size:8px;
+    color:#91aebe;
+}
+
+.alert-stat strong{
+    font-size:16px;
+}
+
+.legend{
+    background:#071b2b;
+    padding:9px 11px;
+    border-radius:8px;
+    color:white;
+    line-height:18px;
+    font-size:10px;
+}
+
+.legend i{
+    width:10px;
+    height:10px;
+    display:inline-block;
+    border-radius:50%;
+    margin-right:6px;
+}
+
+.formula{
+    padding:12px 17px;
+    color:#8fb9ca;
+    font-size:10px;
+    line-height:1.7;
+    border-top:1px solid #17384a;
+}
+
+.formula b{
+    color:#58d5ff;
+}
+
+@media(max-width:1000px){
+
+    .grid{
+        grid-template-columns:1fr;
+    }
+
+    .stats{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+}
+
+@media(max-width:600px){
+
+    .control-row{
+        grid-template-columns:1fr;
+    }
+
+    .stats{
+        grid-template-columns:1fr 1fr;
+    }
+
+}
+
+</style>
+</head>
+
+<body>
+
+<header class="header">
+
+<div class="brand">
+
+<div class="logo">🌊</div>
+
+<div>
+
+<h1>FLOWSHIELD</h1>
+
+<p>
+Kerala AI Flood Simulation & Early Warning Dashboard
+</p>
+
+</div>
+
+</div>
+
+<div class="live">
+<span class="dot"></span>
+SIMULATION LIVE
+</div>
+
+</header>
+
+
+<main class="container">
+
+
+<!-- STAT CARDS -->
+
+<section class="stats">
+
+<div class="card stat">
+
+<div class="label">🌧️ RAINFALL</div>
+
+<div class="value" id="rainStat">90</div>
+
+<div class="small">mm / hour</div>
+
+</div>
+
+
+<div class="card stat">
+
+<div class="label">💧 AVG WATER LEVEL</div>
+
+<div class="value" id="avgWater">0.00</div>
+
+<div class="small">meters</div>
+
+</div>
+
+
+<div class="card stat">
+
+<div class="label">⚠️ AREAS AT RISK</div>
+
+<div class="value" id="riskRegions">0</div>
+
+<div class="small">medium + critical</div>
+
+</div>
+
+
+<div class="card stat">
+
+<div class="label">👥 PEOPLE ALERTED</div>
+
+<div class="value" id="peopleAlerted">0</div>
+
+<div class="small">simulated notifications</div>
+
+</div>
+
+</section>
+
+
+
+<div class="grid">
+
+
+<!-- LEFT -->
+
+<div>
+
+
+<!-- CONTROLS -->
+
+<section class="panel">
+
+<div class="title">
+
+<h2>⚙️ Simulation Controls</h2>
+
+<span>Mathematical Model</span>
+
+</div>
+
+
+<div class="controls">
+
+<div class="control-row">
+
+<div>
+
+<label>
+
+<span>Rainfall Intensity</span>
+
+<b id="rainValue">90 mm/hr</b>
+
+</label>
+
+<input
+id="rainSlider"
+type="range"
+min="10"
+max="160"
+value="90"
+>
+
+</div>
+
+
+<div>
+
+<label>
+
+<span>Simulation Speed</span>
+
+<b id="speedValue">1x</b>
+
+</label>
+
+<input
+id="speedSlider"
+type="range"
+min="1"
+max="5"
+value="1"
+>
+
+</div>
+
+</div>
+
+
+<div class="buttons">
+
+<button class="start"
+onclick="startSimulation()">
+▶ Start
+</button>
+
+<button class="pause"
+onclick="pauseSimulation()">
+⏸ Pause
+</button>
+
+<button class="reset"
+onclick="resetSimulation()">
+↻ Reset
+</button>
+
+</div>
+
+</div>
+
+
+<div class="formula">
+
+<b>Water Balance:</b>
+
+W(t+Δt) = W(t) +
+[Rainfall − Drainage + Inflow − Outflow] × Δt
+
+<br>
+
+<b>AI Risk:</b>
+
+f(Water Level, Rainfall, Elevation, Drainage, Flow, Population)
+
+</div>
+
+</section>
+
+
+
+<!-- MAP -->
+
+<section class="panel" style="margin-top:17px">
+
+<div class="title">
+
+<h2>🗺️ Kerala Flood-Risk Map</h2>
+
+<span id="simTime">T + 0 min</span>
+
+</div>
+
+
+<div class="map-wrap">
+
+<div class="map">
+
+<div id="map"></div>
+
+</div>
+
+</div>
+
+</section>
+
+</div>
+
+
+
+<!-- RIGHT -->
+
+<div>
+
+
+<!-- WARNING -->
+
+<section class="panel">
+
+<div class="title">
+
+<h2>🚨 Auto-Generated Warning</h2>
+
+<span>AI Product Summary</span>
+
+</div>
+
+
+<div
+id="warningBox"
+class="warning stable"
+>
+
+<div
+id="warningTitle"
+class="warning-title">
+🟢 CURRENTLY STABLE
+</div>
+
+
+<div
+id="warningText"
+class="warning-text">
+
+No regions are currently predicted
+to reach critical flood levels.
+
+</div>
+
+
+<div
+id="priorityList"
+class="priority">
+</div>
+
+</div>
+
+</section>
+
+
+
+<!-- AI -->
+
+<section class="ai">
+
+<div class="aihead">
+
+<div>
+
+<h2 style="margin:0;font-size:17px">
+🤖 AI Risk Prediction
+</h2>
+
+<p
+style="font-size:10px;color:#a9b9d0;margin:3px 0 0">
+
+Multi-factor regional risk estimation
+
+</p>
+
+</div>
+
+<span class="badge">
+AI ENGINE
+</span>
+
+</div>
+
+
+<div
+style="font-size:11px;margin-top:12px">
+
+Overall City Risk
+
+<strong id="overallRisk">0%</strong>
+
+</div>
+
+
+<div class="riskbar">
+
+<div id="riskFill" class="fill"></div>
+
+</div>
+
+
+<div class="aigrid">
+
+<div class="aimini">
+
+<small>Critical Regions</small>
+
+<strong id="criticalPrediction">0</strong>
+
+</div>
+
+
+<div class="aimini">
+
+<small>Next Critical Event</small>
+
+<strong id="nextCritical">--</strong>
+
+</div>
+
+</div>
+
+</section>
+
+
+
+<!-- GRAPH -->
+
+<section
+class="panel"
+style="margin-top:17px"
+>
+
+<div class="title">
+
+<h2>📈 Water Level Progression</h2>
+
+<span>LIVE • SMOOTH CURVE</span>
+
+</div>
+
+
+<div class="chartbox">
+
+<canvas id="waterChart"></canvas>
+
+</div>
+
+
+<div class="chart-note">
+
+X-axis: Simulation Time (minutes)
+
+&nbsp; | &nbsp;
+
+Y-axis: Water Level (meters)
+
+&nbsp; | &nbsp;
+
+🟠 Warning
+
+&nbsp; | &nbsp;
+
+🔴 Critical
+
+</div>
+
+</section>
+
+
+
+<!-- ALERTS -->
+
+<section
+class="panel"
+style="margin-top:17px"
+>
+
+<div class="title">
+
+<h2>📱 Public Alerts Sent</h2>
+
+<span>Simulated Emergency Notifications</span>
+
+</div>
+
+
+<div class="alert-summary">
+
+<div class="alert-stat">
+
+<small>PEOPLE ALERTED</small>
+
+<strong id="alertPeople">0</strong>
+
+</div>
+
+
+<div class="alert-stat">
+
+<small>CRITICAL ALERTS</small>
+
+<strong id="criticalAlerts">0</strong>
+
+</div>
+
+
+<div class="alert-stat">
+
+<small>WARNING ALERTS</small>
+
+<strong id="warningAlerts">0</strong>
+
+</div>
+
+</div>
+
+
+<div id="alerts" class="alerts">
+
+<div
+style="
+text-align:center;
+color:#7997a7;
+font-size:10px;
+padding:20px
+">
+
+No alerts generated yet.
+
+<br><br>
+
+Start the simulation to generate
+public warnings.
+
+</div>
+
+</div>
+
+</section>
+
+</div>
+
+</div>
+
+</main>
+
+
+
+<script>
+
+/* =====================================
+   REGIONS
+===================================== */
+
+const regions = [
+
+{
+id:1,
+name:"Alappuzha",
+lat:9.4981,
+lng:76.3388,
+elevation:2,
+drainage:.38,
+population:6500,
+water:.35,
+threshold:1.55,
+warningThreshold:1.0,
+connections:[2,4]
+},
+
+{
+id:2,
+name:"Kottayam",
+lat:9.5916,
+lng:76.5222,
+elevation:9,
+drainage:.52,
+population:5200,
+water:.27,
+threshold:1.75,
+warningThreshold:1.15,
+connections:[1,3,5]
+},
+
+{
+id:3,
+name:"Pathanamthitta",
+lat:9.2648,
+lng:76.7870,
+elevation:18,
+drainage:.60,
+population:3900,
+water:.22,
+threshold:1.9,
+warningThreshold:1.25,
+connections:[2,6]
+},
+
+{
+id:4,
+name:"Kochi",
+lat:9.9312,
+lng:76.2673,
+elevation:3,
+drainage:.42,
+population:9200,
+water:.38,
+threshold:1.6,
+warningThreshold:1.05,
+connections:[1,5,7]
+},
+
+{
+id:5,
+name:"Ernakulam",
+lat:9.9816,
+lng:76.2999,
+elevation:5,
+drainage:.47,
+population:7800,
+water:.31,
+threshold:1.7,
+warningThreshold:1.1,
+connections:[2,4,6,8]
+},
+
+{
+id:6,
+name:"Thrissur",
+lat:10.5276,
+lng:76.2144,
+elevation:15,
+drainage:.58,
+population:6100,
+water:.25,
+threshold:1.9,
+warningThreshold:1.25,
+connections:[3,5,9]
+},
+
+{
+id:7,
+name:"Kollam",
+lat:8.8932,
+lng:76.6141,
+elevation:4,
+drainage:.44,
+population:5700,
+water:.34,
+threshold:1.6,
+warningThreshold:1.05,
+connections:[4,8]
+},
+
+{
+id:8,
+name:"Malappuram",
+lat:11.0510,
+lng:76.0711,
+elevation:20,
+drainage:.63,
+population:7200,
+water:.20,
+threshold:2.0,
+warningThreshold:1.3,
+connections:[5,7,9]
+},
+
+{
+id:9,
+name:"Kozhikode",
+lat:11.2588,
+lng:75.7804,
+elevation:7,
+drainage:.50,
+population:6800,
+water:.29,
+threshold:1.8,
+warningThreshold:1.2,
+connections:[6,8]
+}
+
+];
+
+
+/* =====================================
+   VARIABLES
+===================================== */
+
+let rainfall = 90;
+
+let simulationTime = 0;
+
+let timer = null;
+
+let running = false;
+
+let alertedRegions = new Set();
+
+let totalPeopleAlerted = 0;
+
+let criticalAlertCount = 0;
+
+let warningAlertCount = 0;
+
+
+/* =====================================
+   MAP
+===================================== */
+
+const map =
+L.map("map")
+.setView([10.25,76.35],7);
+
+
+L.tileLayer(
+"https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+{
+maxZoom:18,
+attribution:"© OpenStreetMap contributors"
+}
+).addTo(map);
+
+
+const layers = {};
+
+
+/* =====================================
+   RISK
+===================================== */
+
+function calculateRisk(r){
+
+    const waterRisk =
+        Math.min(r.water/r.threshold,1);
+
+    const rainRisk =
+        Math.min(rainfall/160,1);
+
+    const elevationRisk =
+        Math.max(
+            0,
+            Math.min(
+                (25-r.elevation)/25,
+                1
+            )
+        );
+
+    const drainageRisk =
+        1-r.drainage;
+
+    const populationRisk =
+        Math.min(r.population/9500,1);
+
+    return Math.min(
+        100,
+        Math.round(
+            waterRisk*45+
+            rainRisk*20+
+            elevationRisk*15+
+            drainageRisk*10+
+            populationRisk*10
+        )
+    );
+}
+
+
+function getStatus(r){
+
+    const risk=calculateRisk(r);
+
+    if(
+        r.water>=r.threshold ||
+        risk>=70
+    )
+        return "critical";
+
+    if(
+        r.water>=r.warningThreshold ||
+        risk>=40
+    )
+        return "warning";
+
+    return "safe";
+}
+
+
+function getColor(r){
+
+    const status=getStatus(r);
+
+    if(status==="critical")
+        return "#ff354f";
+
+    if(status==="warning")
+        return "#ffae22";
+
+    return "#20d69b";
+}
+
+
+function criticalTime(r){
+
+    if(r.water>=r.threshold)
+        return 0;
+
+    const growth=Math.max(
+        .018,
+        rainfall/4600
+    );
+
+    return Math.max(
+        1,
+        Math.round(
+            (r.threshold-r.water)/growth
+        )
+    );
+}
+
+
+/* =====================================
+   MAP POPUP
+===================================== */
+
+function popup(r){
+
+    const status=getStatus(r);
+
+    let label="🟢 LOW RISK";
+
+    if(status==="warning")
+        label="🟠 MEDIUM RISK";
+
+    if(status==="critical")
+        label="🔴 CRITICAL";
+
+    return `
+
+    <b style="font-size:16px">
+    ${r.name}
+    </b>
+
+    <br><br>
+
+    <b>${label}</b>
+
+    <hr>
+
+    💧 Water:
+    <b>${r.water.toFixed(2)} m</b>
+
+    <br>
+
+    ⛰️ Elevation:
+    ${r.elevation} m
+
+    <br>
+
+    👥 Population:
+    ${r.population.toLocaleString()}
+
+    <br>
+
+    💧 Drainage:
+    ${(r.drainage*100).toFixed(0)}%
+
+    <br>
+
+    🤖 AI Risk:
+    <b>${calculateRisk(r)}%</b>
+
+    <br>
+
+    ⏱️ Critical in:
+    <b>${criticalTime(r)} min</b>
+
+    `;
+}
+
+
+/* =====================================
+   MAP RENDER
+===================================== */
+
+function renderMap(){
+
+    regions.forEach(r=>{
+
+        const color=getColor(r);
+
+        if(!layers[r.id]){
+
+            layers[r.id]=
+            L.circle(
+                [r.lat,r.lng],
+                {
+                    radius:12500,
+                    color:color,
+                    weight:3,
+                    fillColor:color,
+                    fillOpacity:.43
+                }
+            )
+            .addTo(map)
+            .bindPopup(popup(r));
+
+        }else{
+
+            layers[r.id].setStyle({
+
+                color:color,
+
+                fillColor:color,
+
+                fillOpacity:.43
+
+            });
+
+            layers[r.id]
+            .setPopupContent(
+                popup(r)
+            );
+        }
+
+    });
+}
+
+
+/* =====================================
+   MAP LEGEND
+===================================== */
+
+const legend=L.control({
+position:"bottomright"
+});
+
+
+legend.onAdd=function(){
+
+    const div=
+    L.DomUtil.create(
+        "div",
+        "legend"
+    );
+
+    div.innerHTML=`
+
+    <div>
+    <i style="background:#20d69b"></i>
+    Low Risk
+    </div>
+
+    <div>
+    <i style="background:#ffae22"></i>
+    Medium Risk
+    </div>
+
+    <div>
+    <i style="background:#ff354f"></i>
+    Critical
+    </div>
+
+    `;
+
+    return div;
+};
+
+legend.addTo(map);
+
+
+/* =====================================
+   SLIDERS
+===================================== */
+
+const rainSlider=
+document.getElementById(
+    "rainSlider"
+);
+
+
+rainSlider.oninput=function(){
+
+    rainfall=
+        Number(
+            rainSlider.value
+        );
+
+    document.getElementById(
+        "rainValue"
+    ).textContent=
+        rainfall+" mm/hr";
+
+    document.getElementById(
+        "rainStat"
+    ).textContent=
+        rainfall;
+
+    updateDashboard();
+};
+
+
+const speedSlider=
+document.getElementById(
+    "speedSlider"
+);
+
+
+speedSlider.oninput=function(){
+
+    document.getElementById(
+        "speedValue"
+    ).textContent=
+        speedSlider.value+"x";
+
+};
+
+
+/* =====================================
+   WATER SIMULATION
+===================================== */
+
+function waterStep(){
+
+    const next=[];
+
+    regions.forEach(r=>{
+
+        const rain=
+            (rainfall/1000)
+            *.9
+            *.22;
+
+        const drainage=
+            Math.min(
+                r.drainage*.045,
+                r.water*.20
+            );
+
+        let inflow=0;
+
+        let outflow=0;
+
+        r.connections.forEach(id=>{
+
+            const n=
+                regions.find(
+                    x=>x.id===id
+                );
+
+            const difference=
+                (r.elevation+r.water)
+                -
+                (n.elevation+n.water);
+
+            if(difference>0){
+
+                outflow+=
+                    Math.min(
+                        difference*.0035,
+                        r.water*.07
+                    );
+
+            }else{
+
+                inflow+=
+                    Math.min(
+                        Math.abs(
+                            difference
+                        )*.0018,
+                        n.water*.045
+                    );
+            }
+
+        });
+
+
+        next.push(
+            Math.max(
+                0,
+                r.water+
+                rain+
+                inflow-
+                drainage-
+                outflow
+            )
+        );
+
+    });
+
+
+    regions.forEach(
+        (r,i)=>
+            r.water=next[i]
+    );
+
+}
+
+
+/* =====================================
+   HISTORY
+===================================== */
+
+const history={
+
+    time:[],
+
+    regions:
+        regions.map(
+            ()=>[]
+        )
+
+};
+
+
+function recordHistory(){
+
+    history.time.push(
+        simulationTime
+    );
+
+    regions.forEach(
+        (r,i)=>{
+
+            history.regions[i]
+            .push(r.water);
+
+        }
+    );
+
+
+    if(
+        history.time.length>60
+    ){
+
+        history.time.shift();
+
+        history.regions
+        .forEach(
+            a=>a.shift()
+        );
+
+    }
+
+}
+
+
+/* =====================================
+   PUBLIC ALERTS
+===================================== */
+
+function generateAlerts(){
+
+    const alerts=
+        document.getElementById(
+            "alerts"
+        );
+
+
+    regions.forEach(r=>{
+
+        const status=
+            getStatus(r);
+
+
+        if(
+            (status==="warning" ||
+             status==="critical")
+            &&
+            !alertedRegions.has(r.id)
+        ){
+
+            alertedRegions.add(r.id);
+
+
+            totalPeopleAlerted+=
+                r.population;
+
+
+            if(status==="critical")
+                criticalAlertCount++;
+
+            else
+                warningAlertCount++;
+
+
+            const alert=
+                document.createElement(
+                    "div"
+                );
+
+
+            alert.className=
+                status==="critical"
+                ?
+                "alert critical-alert"
+                :
+                "alert warning-alert";
+
+
+            const title=
+                status==="critical"
+                ?
+                "🔴 CRITICAL FLOOD ALERT"
+                :
+                "🟠 EARLY FLOOD WARNING";
+
+
+            const message=
+                status==="critical"
+
+                ?
+
+                `Flood risk is CRITICAL in ${r.name}.
+                Move to designated higher-ground shelters
+                and follow emergency instructions.`
+
+                :
+
+                `Flood risk is increasing in ${r.name}.
+                Residents should stay alert and prepare
+                for possible evacuation.`;
+
+
+            alert.innerHTML=`
+
+            <div class="alert-head">
+
+            <span>${title}</span>
+
+            <span>
+            T + ${simulationTime} min
+            </span>
+
+            </div>
+
+            <div class="alert-body">
+
+            <b>${r.name}</b>
+
+            <br>
+
+            💧 Water Level:
+            ${r.water.toFixed(2)} m
+
+            <br>
+
+            👥 Estimated People:
+            ${r.population.toLocaleString()}
+
+            <br>
+
+            📢 ${message}
+
+            </div>
+
+            <span
+            class="alert-status
+            ${status==="critical"
+            ?"alert-critical-status"
+            :""}">
+
+            📱 SMS / APP ALERT SENT
+
+            </span>
+
+            `;
+
+
+            if(
+                alerts.innerText
+                .includes("No alerts generated")
+            ){
+
+                alerts.innerHTML="";
+
+            }
+
+
+            alerts.prepend(alert);
+
+        }
+
+    });
+
+
+    document.getElementById(
+        "peopleAlerted"
+    ).textContent=
+        totalPeopleAlerted.toLocaleString();
+
+
+    document.getElementById(
+        "alertPeople"
+    ).textContent=
+        totalPeopleAlerted.toLocaleString();
+
+
+    document.getElementById(
+        "criticalAlerts"
+    ).textContent=
+        criticalAlertCount;
+
+
+    document.getElementById(
+        "warningAlerts"
+    ).textContent=
+        warningAlertCount;
+
+}
+
+
+/* =====================================
+   WARNING
+===================================== */
+
+function updateWarning(){
+
+    const risky=
+        regions
+        .map(r=>({
+
+            r:r,
+
+            score:calculateRisk(r),
+
+            time:criticalTime(r)
+
+        }))
+        .filter(
+            x=>x.score>=40
+        )
+        .sort(
+            (a,b)=>a.time-b.time
+        );
+
+
+    const critical=
+        risky.filter(
+            x=>x.score>=70
+        );
+
+
+    const exposed=
+        risky.reduce(
+            (sum,x)=>
+                sum+x.r.population,
+            0
+        );
+
+
+    const box=
+        document.getElementById(
+            "warningBox"
+        );
+
+
+    const list=
+        document.getElementById(
+            "priorityList"
+        );
+
+
+    list.innerHTML="";
+
+
+    if(!critical.length){
+
+        box.className=
+            "warning stable";
+
+        document.getElementById(
+            "warningTitle"
+        ).textContent=
+            "🟢 CURRENTLY STABLE";
+
+        document.getElementById(
+            "warningText"
+        ).innerHTML=
+            "No regions are currently predicted to reach critical flood levels.";
+
+        return;
+    }
+
+
+    box.className="warning";
+
+
+    document.getElementById(
+        "warningTitle"
+    ).textContent=
+        `🚨 ${critical.length}
+        REGION${critical.length>1?"S":""}
+        AT HIGH RISK`;
+
+
+    document.getElementById(
+        "warningText"
+    ).innerHTML=
+        `${critical.length}
+        region${critical.length>1?"s are":" is"}
+        predicted to become critical.
+        Estimated exposure:
+        <strong>
+        ${exposed.toLocaleString()}
+        </strong> people.`;
+
+
+    critical
+    .slice(0,4)
+    .forEach(x=>{
+
+        const div=
+            document.createElement(
+                "div"
+            );
+
+
+        div.innerHTML=`
+
+        <span>
+        🔴 ${x.r.name}
+        </span>
+
+        <span>
+        ${x.time} min |
+        ${x.score}%
+        </span>
+
+        `;
+
+
+        list.appendChild(div);
+
+    });
+
+}
+
+
+/* =====================================
+   SMOOTH CURVED GRAPH
+===================================== */
+
+function drawGraph(){
+
+    const canvas=
+        document.getElementById(
+            "waterChart"
+        );
+
+
+    const rect=
+        canvas.getBoundingClientRect();
+
+
+    const dpr=
+        window.devicePixelRatio||1;
+
+
+    canvas.width=
+        rect.width*dpr;
+
+    canvas.height=
+        rect.height*dpr;
+
+
+    const ctx=
+        canvas.getContext("2d");
+
+
+    ctx.setTransform(
+        dpr,0,0,dpr,0,0
+    );
+
+
+    const width=rect.width;
+
+    const height=rect.height;
+
+
+    ctx.clearRect(
+        0,0,width,height
+    );
+
+
+    ctx.fillStyle="#061725";
+
+    ctx.fillRect(
+        0,0,width,height
+    );
+
+
+    const left=55;
+
+    const right=20;
+
+    const top=45;
+
+    const bottom=45;
+
+
+    const graphWidth=
+        width-left-right;
+
+
+    const graphHeight=
+        height-top-bottom;
+
+
+    const maxWater=2.4;
+
+
+    /* GRID */
+
+    ctx.font="10px Segoe UI";
+
+    ctx.fillStyle="#8faebe";
+
+    ctx.strokeStyle="#18384a";
+
+    ctx.lineWidth=1;
+
+
+    for(let i=0;i<=6;i++){
+
+        const y=
+            top+
+            graphHeight*i/6;
+
+
+        ctx.beginPath();
+
+        ctx.moveTo(left,y);
+
+        ctx.lineTo(
+            left+graphWidth,
+            y
+        );
+
+        ctx.stroke();
+
+
+        const value=
+            (
+                maxWater*
+                (1-i/6)
+            ).toFixed(1);
+
+
+        ctx.fillText(
+            value,
+            12,
+            y+3
+        );
+
+    }
+
+
+    /* Y TITLE */
+
+    ctx.save();
+
+    ctx.translate(
+        13,
+        top+graphHeight/2
+    );
+
+    ctx.rotate(-Math.PI/2);
+
+    ctx.fillStyle="#9bb7c5";
+
+    ctx.fillText(
+        "Water Level (m)",
+        0,
+        0
+    );
+
+    ctx.restore();
+
+
+    /* X TITLE */
+
+    ctx.fillStyle="#9bb7c5";
+
+    ctx.fillText(
+        "Simulation Time (minutes)",
+        width/2-65,
+        height-10
+    );
+
+
+    /* WARNING LINE */
+
+    const warning=1.1;
+
+    const warningY=
+        top+
+        graphHeight*
+        (1-warning/maxWater);
+
+
+    ctx.strokeStyle="#ffae22";
+
+    ctx.setLineDash([7,5]);
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+        left,
+        warningY
+    );
+
+    ctx.lineTo(
+        left+graphWidth,
+        warningY
+    );
+
+    ctx.stroke();
+
+    ctx.setLineDash([]);
+
+
+    ctx.fillStyle="#ffae22";
+
+    ctx.fillText(
+        "Warning",
+        left+5,
+        warningY-6
+    );
+
+
+    /* CRITICAL LINE */
+
+    const critical=1.7;
+
+    const criticalY=
+        top+
+        graphHeight*
+        (1-critical/maxWater);
+
+
+    ctx.strokeStyle="#ff354f";
+
+    ctx.setLineDash([7,5]);
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+        left,
+        criticalY
+    );
+
+    ctx.lineTo(
+        left+graphWidth,
+        criticalY
+    );
+
+    ctx.stroke();
+
+    ctx.setLineDash([]);
+
+
+    ctx.fillStyle="#ff7181";
+
+    ctx.fillText(
+        "Critical",
+        left+5,
+        criticalY-6
+    );
+
+
+    /* X LABELS */
+
+    if(history.time.length){
+
+        for(let i=0;i<5;i++){
+
+            const index=
+                Math.floor(
+                    i*
+                    (history.time.length-1)
+                    /4
+                );
+
+
+            const x=
+                left+
+                graphWidth*
+                index/
+                Math.max(
+                    1,
+                    history.time.length-1
+                );
+
+
+            ctx.fillStyle="#8faebe";
+
+            ctx.fillText(
+                history.time[index],
+                x-5,
+                height-27
+            );
+
+        }
+
+    }
+
+
+    /* COLORS */
+
+    const colors=[
+
+        "#38d9ff",
+        "#ff9f43",
+        "#a78bfa",
+        "#20d69b",
+        "#ff5570",
+        "#f4d35e",
+        "#63e6be",
+        "#b197fc",
+        "#74c0fc"
+
+    ];
+
+
+    /* =================================
+       DRAW SMOOTH CURVES
+    ================================= */
+
+    history.regions.forEach(
+        (data,regionIndex)=>{
+
+            if(data.length<2)
+                return;
+
+
+            const points=[];
+
+
+            data.forEach(
+                (value,index)=>{
+
+                    const x=
+                        left+
+                        graphWidth*
+                        index/
+                        Math.max(
+                            1,
+                            data.length-1
+                        );
+
+
+                    const y=
+                        top+
+                        graphHeight*
+                        (
+                            1-
+                            value/maxWater
+                        );
+
+
+                    points.push({
+                        x:x,
+                        y:y
+                    });
+
+                }
+            );
+
+
+            const color=
+                colors[
+                    regionIndex%
+                    colors.length
+                ];
+
+
+            /* GLOW */
+
+            ctx.save();
+
+            ctx.globalAlpha=.13;
+
+            ctx.strokeStyle=color;
+
+            ctx.lineWidth=9;
+
+            ctx.lineCap="round";
+
+            ctx.lineJoin="round";
+
+
+            ctx.beginPath();
+
+            ctx.moveTo(
+                points[0].x,
+                points[0].y
+            );
+
+
+            for(
+                let i=1;
+                i<points.length;
+                i++
+            ){
+
+                const p0=
+                    points[i-1];
+
+                const p1=
+                    points[i];
+
+
+                const controlX=
+                    (p0.x+p1.x)/2;
+
+
+                ctx.bezierCurveTo(
+
+                    controlX,
+                    p0.y,
+
+                    controlX,
+                    p1.y,
+
+                    p1.x,
+                    p1.y
+
+                );
+
+            }
+
+
+            ctx.stroke();
+
+            ctx.restore();
+
+
+            /* MAIN CURVE */
+
+            ctx.strokeStyle=color;
+
+            ctx.lineWidth=3;
+
+            ctx.lineCap="round";
+
+            ctx.lineJoin="round";
+
+
+            ctx.beginPath();
+
+            ctx.moveTo(
+                points[0].x,
+                points[0].y
+            );
+
+
+            for(
+                let i=1;
+                i<points.length;
+                i++
+            ){
+
+                const p0=
+                    points[i-1];
+
+                const p1=
+                    points[i];
+
+
+                const controlX=
+                    (p0.x+p1.x)/2;
+
+
+                ctx.bezierCurveTo(
+
+                    controlX,
+                    p0.y,
+
+                    controlX,
+                    p1.y,
+
+                    p1.x,
+                    p1.y
+
+                );
+
+            }
+
+
+            ctx.stroke();
+
+
+            /* CURRENT POINT */
+
+            const last=
+                points[
+                    points.length-1
+                ];
+
+
+            ctx.beginPath();
+
+            ctx.arc(
+                last.x,
+                last.y,
+                4,
+                0,
+                Math.PI*2
+            );
+
+
+            ctx.fillStyle=color;
+
+            ctx.fill();
+
+        }
+    );
+
+
+    /* =================================
+       LEGEND
+    ================================= */
+
+    let legendX=left;
+
+    let legendY=18;
+
+
+    regions.forEach(
+        (r,i)=>{
+
+            const color=
+                colors[
+                    i%
+                    colors.length
+                ];
+
+
+            ctx.fillStyle=color;
+
+            ctx.fillRect(
+                legendX,
+                legendY-7,
+                9,
+                9
+            );
+
+
+            ctx.fillStyle="#c8dce5";
+
+            ctx.fillText(
+                r.name,
+                legendX+13,
+                legendY
+            );
+
+
+            legendX+=95;
+
+
+            if(
+                legendX>width-100
+            ){
+
+                legendX=left;
+
+                legendY+=16;
+
+            }
+
+        }
+    );
+
+}
+
+
+/* =====================================
+   DASHBOARD UPDATE
+===================================== */
+
+function updateDashboard(){
+
+    renderMap();
+
+    updateWarning();
+
+    generateAlerts();
+
+
+    const avg=
+        regions.reduce(
+            (sum,r)=>
+                sum+r.water,
+            0
+        )/
+        regions.length;
+
+
+    const risky=
+        regions.filter(
+            r=>calculateRisk(r)>=40
+        );
+
+
+    const overall=
+        Math.round(
+            regions.reduce(
+                (sum,r)=>
+                    sum+calculateRisk(r),
+                0
+            )/
+            regions.length
+        );
+
+
+    const critical=
+        regions.filter(
+            r=>calculateRisk(r)>=70
+        );
+
+
+    document.getElementById(
+        "avgWater"
+    ).textContent=
+        avg.toFixed(2);
+
+
+    document.getElementById(
+        "riskRegions"
+    ).textContent=
+        risky.length;
+
+
+    document.getElementById(
+        "overallRisk"
+    ).textContent=
+        overall+"%";
+
+
+    document.getElementById(
+        "riskFill"
+    ).style.width=
+        overall+"%";
+
+
+    document.getElementById(
+        "criticalPrediction"
+    ).textContent=
+        critical.length;
+
+
+    const times=
+        regions.map(
+            criticalTime
+        );
+
+
+    document.getElementById(
+        "nextCritical"
+    ).textContent=
+        Math.min(...times)+" min";
+
+
+    document.getElementById(
+        "simTime"
+    ).textContent=
+        "T + "+
+        simulationTime+
+        " min";
+
+
+    drawGraph();
+
+}
+
+
+/* =====================================
+   SIMULATION
+===================================== */
+
+function step(){
+
+    waterStep();
+
+    simulationTime++;
+
+    recordHistory();
+
+    updateDashboard();
+
+}
+
+
+function startSimulation(){
+
+    pauseSimulation();
+
+    running=true;
+
+
+    const speed=
+        Number(
+            speedSlider.value
+        );
+
+
+    timer=
+        setInterval(
+            step,
+            Math.max(
+                150,
+                1000/speed
+            )
+        );
+
+}
+
+
+function pauseSimulation(){
+
+    running=false;
+
+
+    if(timer){
+
+        clearInterval(timer);
+
+        timer=null;
+
+    }
+
+}
+
+
+function resetSimulation(){
+
+    pauseSimulation();
+
+
+    simulationTime=0;
+
+
+    const initial=[
+
+        .35,
+        .27,
+        .22,
+        .38,
+        .31,
+        .25,
+        .34,
+        .20,
+        .29
+
+    ];
+
+
+    regions.forEach(
+        (r,i)=>
+            r.water=initial[i]
+    );
+
+
+    history.time=[];
+
+
+    history.regions.forEach(
+        a=>a.length=0
+    );
+
+
+    alertedRegions.clear();
+
+
+    totalPeopleAlerted=0;
+
+    criticalAlertCount=0;
+
+    warningAlertCount=0;
+
+
+    document.getElementById(
+        "alerts"
+    ).innerHTML=`
+
+    <div
+    style="
+    text-align:center;
+    color:#7997a7;
+    font-size:10px;
+    padding:20px
+    ">
+
+    No alerts generated yet.
+
+    <br><br>
+
+    Start the simulation to generate
+    public warnings.
+
+    </div>
+
+    `;
+
+
+    recordHistory();
+
+    updateDashboard();
+
+}
+
+
+/* =====================================
+   INITIALIZE
+===================================== */
+
+recordHistory();
+
+updateDashboard();
+
+
+window.addEventListener(
+    "resize",
+    drawGraph
+);
+
+</script>
+
+</body>
+</html>
